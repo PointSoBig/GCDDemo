@@ -10,6 +10,8 @@
 
 @interface AppDelegate ()
 
+@property (nonatomic,assign) UIBackgroundTaskIdentifier backgroundTask;
+
 @end
 
 @implementation AppDelegate
@@ -22,14 +24,34 @@
 
 
 - (void)applicationWillResignActive:(UIApplication *)application {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+    
 }
 
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    self.backgroundTask = [[UIApplication sharedApplication]beginBackgroundTaskWithExpirationHandler:^{
+        [[UIApplication sharedApplication] endBackgroundTask:_backgroundTask];
+        self.backgroundTask = UIBackgroundTaskInvalid;
+    }];
+    
+    
+    NSLog(@"开始延时");
+    double delayInSecond = 10;
+    dispatch_time_t delty = dispatch_time(DISPATCH_TIME_NOW, delayInSecond *NSEC_PER_SEC);
+    dispatch_after(delty, dispatch_get_main_queue(), ^{
+        for (int i = 0; i<10; i++)
+        {
+            NSLog(@"%d",i);
+        }
+    });
+    
+    [[UIApplication sharedApplication]endBackgroundTask:self.backgroundTask];
+    self.backgroundTask = UIBackgroundTaskInvalid;
+    
+   
+    
+    
+    
 }
 
 
